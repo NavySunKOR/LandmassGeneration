@@ -20,8 +20,8 @@ public static class Noise{
             scale = 0.0001f;
         }
 
-        float minNoiseHeight = float.MinValue;
-        float maxNoiseHeight = float.MaxValue;
+        float minNoiseHeight = float.MaxValue;
+        float maxNoiseHeight = float.MinValue;
 
         float halfWidth = mapWidth / 2f;
         float halfHeight = mapHeight / 2f;
