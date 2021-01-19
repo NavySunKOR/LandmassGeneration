@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
+using System.Collections;
 
-public static class Noise
-{
+public static class Noise{
+
     public static float[,] GenerateNoiseMap(int mapWidth,int mapHeight,int seed,float scale,int octaves,float persistence, float lacunarity,Vector2 offset){
         float[,] noiseMap = new float[mapWidth, mapHeight];
 
@@ -56,10 +56,8 @@ public static class Noise
             }
         }
 
-        for(int y = 0; y < mapHeight; y++)
-        {
-            for(int x = 0; x < mapWidth; x++)
-            {
+        for(int y = 0; y < mapHeight; y++){
+            for(int x = 0; x < mapWidth; x++){
                 noiseMap[x, y] = Mathf.InverseLerp(minNoiseHeight, maxNoiseHeight, noiseMap[x, y]); //정규화하기 위하여 사용됨 - 0.1,0.2,0.3,0.4 이렇게 있으면 0.1 0.4 이렇게 두개만 나오게 할 수 있게 한다는 뜻
             }
         }
