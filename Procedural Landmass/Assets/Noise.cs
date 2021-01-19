@@ -1,17 +1,11 @@
-﻿using System.Collections;
+﻿using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine;
 
 public static class Noise
 {
-    public static float[,] GenerateNoiseMap(int mapWidth,int mapHeight,int seed,float scale,int octaves,float persistence, float lacunarity,Vector2 offset)
-    {
+    public static float[,] GenerateNoiseMap(int mapWidth,int mapHeight,int seed,float scale,int octaves,float persistence, float lacunarity,Vector2 offset){
         float[,] noiseMap = new float[mapWidth, mapHeight];
 
-        if(scale <=0)
-        {
-            scale = 0.0001f;
-        }
         System.Random prng = new System.Random(seed);
         Vector2[] octaveOffsets = new Vector2[octaves];
         for(int i = 0; i < octaveOffsets.Length;i++)
@@ -21,6 +15,10 @@ public static class Noise
             octaveOffsets[i] = new Vector2(offsetX, offsetY);
         }
 
+        if (scale <= 0)
+        {
+            scale = 0.0001f;
+        }
 
         float minNoiseHeight = float.MinValue;
         float maxNoiseHeight = float.MaxValue;
@@ -28,15 +26,14 @@ public static class Noise
         float halfWidth = mapWidth / 2f;
         float halfHeight = mapHeight / 2f;
 
-        for(int y = 0; y < mapHeight; y++)
-        {
-            for(int x = 0; x<mapWidth; x++)
-            {
+        for(int y = 0; y < mapHeight; y++){
+            for(int x = 0; x<mapWidth; x++){
+
                 float amplitude = 1;
                 float frequency = 1;
                 float noiseHeight = 0;
-                for (int i = 0; i < octaves;i++)
-                {
+
+                for (int i = 0; i < octaves;i++){
                     float sampleX = (x- halfWidth) / scale * frequency + octaveOffsets[i].x; //밸류가 작을수록 느슨해지고 밸류가 클수록 커진다. 여기서 주기를 곱해지면 숫자가 점점 커지므로 촘촘해진다.
                     float sampleY = (y-halfHeight) / scale * frequency + octaveOffsets[i].y;// 스케일이 커지면  공간이 느슨해진다. 
 
