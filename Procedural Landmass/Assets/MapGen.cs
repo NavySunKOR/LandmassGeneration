@@ -14,11 +14,17 @@ public class MapGen : MonoBehaviour
     public float lacunarity;
     public bool autoUpdate;
 
+    public bool isColor;
+
+
     public void GenerateMap()
     {
         float[,] noiseMap = Noise.GenerateNoiseMap(mapWidth, mapHeight, seed, noiseScale, octaves, persistence,lacunarity, offset);
         MapDisplay display = FindObjectOfType<MapDisplay>();
-        display.DrawNoiseMap(noiseMap);
+        if (isColor)
+            display.DrawColorMap(noiseMap);
+        else
+            display.DrawNoiseMap(noiseMap);
     }
 
     private void OnValidate()

@@ -472,6 +472,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   textureRender: {fileID: 129190003}
+  layerOfLands:
+  - label: Water
+    landType: 0
+    value: 0.3
+    color: {r: 0, g: 0.7692599, b: 1, a: 0}
+  - label: Ground
+    landType: 1
+    value: 0.6
+    color: {r: 0.49056602, g: 0.33501586, b: 0.053221796, a: 0}
+  - label: Tree
+    landType: 2
+    value: 1
+    color: {r: 0, g: 0.754717, b: 0.056060035, a: 0}
 --- !u!114 &1926929369
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -486,13 +499,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mapWidth: 100
   mapHeight: 100
-  noiseScale: 2
+  noiseScale: 22.15
   seed: 4500
   octaves: 3
-  offset: {x: 0.35, y: 0.75}
-  persistence: 1.5
-  lacunarity: 0.75
+  offset: {x: 0.5, y: 0.5}
+  persistence: 1.69
+  lacunarity: 1.73
   autoUpdate: 1
+  isColor: 1
 --- !u!4 &1926929370
 Transform:
   m_ObjectHideFlags: 0
