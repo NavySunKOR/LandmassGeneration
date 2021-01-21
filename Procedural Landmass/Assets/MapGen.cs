@@ -2,6 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum DrawType
+{ 
+    whiteBlackNoise,
+    color,
+    mesh
+}
+
 public class MapGen : MonoBehaviour
 {
     public int mapWidth;
@@ -14,17 +21,19 @@ public class MapGen : MonoBehaviour
     public float lacunarity;
     public bool autoUpdate;
 
-    public bool isColor;
+    public DrawType drawType;
 
 
     public void GenerateMap()
     {
         float[,] noiseMap = Noise.GenerateNoiseMap(mapWidth, mapHeight, seed, noiseScale, octaves, persistence,lacunarity, offset);
         MapDisplay display = FindObjectOfType<MapDisplay>();
-        if (isColor)
+        if (drawType == DrawType.color)
             display.DrawColorMap(noiseMap);
-        else
+        else if(drawType == DrawType.whiteBlackNoise)
             display.DrawNoiseMap(noiseMap);
+        else if(drawType == DrawType.mesh)
+            display.DrawMeshMap(noiseMap);
     }
 
     private void OnValidate()
