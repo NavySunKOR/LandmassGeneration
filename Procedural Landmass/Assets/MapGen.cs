@@ -11,41 +11,35 @@ public enum DrawType
 
 public class MapGen : MonoBehaviour
 {
-    public int mapWidth;
-    public int mapHeight;
+    const int mapChunkSize = 241;
+    public int levelOfDetails;
     public float noiseScale;
     public int seed;
     public int octaves;
     public Vector2 offset;
     public float persistence;
     public float lacunarity;
+    public float maxHeightPx;
     public bool autoUpdate;
 
     public DrawType drawType;
+    public AnimationCurve landCurve;
 
 
     public void GenerateMap()
     {
-        float[,] noiseMap = Noise.GenerateNoiseMap(mapWidth, mapHeight, seed, noiseScale, octaves, persistence,lacunarity, offset);
+        float[,] noiseMap = Noise.GenerateNoiseMap(mapChunkSize, mapChunkSize, seed, noiseScale, octaves, persistence,lacunarity, offset);
         MapDisplay display = FindObjectOfType<MapDisplay>();
         if (drawType == DrawType.color)
             display.DrawColorMap(noiseMap);
         else if(drawType == DrawType.whiteBlackNoise)
             display.DrawNoiseMap(noiseMap);
         else if(drawType == DrawType.mesh)
-            display.DrawMeshMap(noiseMap);
+            display.DrawMeshMap(noiseMap,maxHeightPx,landCurve, levelOfDetails);
     }
 
     private void OnValidate()
     {
-        if(mapWidth < 1)
-        {
-            mapWidth = 1;
-        }
-        if(mapHeight < 1)
-        {
-            mapHeight = 1;
-        }
         if(lacunarity < 1)
         {
             lacunarity = 1;
