@@ -11,7 +11,7 @@ public enum DrawType
 
 public class MapGen : MonoBehaviour
 {
-    const int mapChunkSize = 241;
+    public const int mapChunkSize = 241;
     public int levelOfDetails;
     public float noiseScale;
     public int seed;
