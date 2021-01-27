@@ -8,21 +8,12 @@ public enum LandType
 }
 
 
-[System.Serializable]
-public class LayerOfLand
-{
-    public string label;
-    public LandType landType;
-    public float value;
-    public Color color;
-
-}
 
 
 public class MapDisplay : MonoBehaviour
 {
     public Renderer textureRender;
-    public LayerOfLand[] layerOfLands;
+    
 
     public MeshRenderer meshRender;
     public MeshFilter meshFilter;
@@ -46,55 +37,16 @@ public class MapDisplay : MonoBehaviour
         textureRender.transform.localScale = new Vector3(width, 1, height);
     }
 
-    public void DrawColorMap(float[,] noiseMap)
+    public void DrawColorMap(float[,] noiseMap,Color[] colorMap)
     {
-
-        int width = noiseMap.GetLength(0);
-        int height = noiseMap.GetLength(1);
-        Color[] colour = new Color[width * height];
-        for (int y = 0; y < height; y++)
-        {
-            for (int x = 0; x < width; x++)
-            {
-                for(int i = 0; i < layerOfLands.Length; i++)
-                {
-                    if(noiseMap[x,y] <= layerOfLands[i].value)
-                    {
-                        colour[y * width + x] = layerOfLands[i].color;
-                        break;
-                    }
-                }
-            }
-        }
-
-        Texture2D texture = TextureGenerator.DrawTexture(colour, width, height);
+        Texture2D texture = TextureGenerator.DrawTexture(colorMap, noiseMap.GetLength(0) - 1, noiseMap.GetLength(1) - 1);
         textureRender.sharedMaterial.mainTexture = texture;
-        textureRender.transform.localScale = new Vector3(width, 1, height);
+        textureRender.transform.localScale = new Vector3(noiseMap.GetLength(0) - 1, 1, noiseMap.GetLength(1) - 1);
     }
 
-    public void DrawMeshMap(float[,] noiseMap,float pMaxHeight,AnimationCurve landCurve,int levelOfDetails)
+    public void DrawMeshMap(float[,] noiseMap,Color[] colorMap,float pMaxHeight,AnimationCurve landCurve,int levelOfDetails)
     {
-        int width = noiseMap.GetLength(0);
-        int height = noiseMap.GetLength(1);
-        Color[] colour = new Color[width * height];
-        for (int y = 0; y < height; y++)
-        {
-            for (int x = 0; x < width; x++)
-            {
-                for (int i = 0; i < layerOfLands.Length; i++)
-                {
-                    //애니메이션 커브에 맞춰서 값을 재정비한다.
-                    if (noiseMap[x, y] <= layerOfLands[i].value)
-                    {
-                        colour[y * width + x] = layerOfLands[i].color;
-                        break;
-                    }
-                }
-            }
-        }
-        Texture2D texture = TextureGenerator.DrawTexture(colour, width, height);
-
-
+        Texture2D texture = TextureGenerator.DrawTexture(colorMap, noiseMap.GetLength(0), noiseMap.GetLength(1));
         Mesh mesh = MeshGenerator.CreateMesh(noiseMap,pMaxHeight, landCurve, levelOfDetails);
         meshFilter.mesh = mesh;
         meshRender.sharedMaterial.SetTexture("_MainTex", texture);

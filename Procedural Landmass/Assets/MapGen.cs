@@ -8,6 +8,28 @@ public enum DrawType
     color,
     mesh
 }
+[System.Serializable]
+public class LayerOfLand
+{
+    public string label;
+    public LandType landType;
+    public float value;
+    public Color color;
+
+}
+
+public struct MapData
+{
+    public float[,] heightMap;
+    public Color[] colorMap;
+
+    public MapData(float[,] heightMap, Color[] colorMap)
+    {
+        this.heightMap = heightMap;
+        this.colorMap = colorMap;
+    }
+}
+
 
 public class MapGen : MonoBehaviour
 {
@@ -24,18 +46,42 @@ public class MapGen : MonoBehaviour
 
     public DrawType drawType;
     public AnimationCurve landCurve;
+    public LayerOfLand[] layerOfLands;
 
 
-    public void GenerateMap()
+    public MapData GenerateMap()
     {
         float[,] noiseMap = Noise.GenerateNoiseMap(mapChunkSize, mapChunkSize, seed, noiseScale, octaves, persistence,lacunarity, offset);
+        int width = noiseMap.GetLength(0);
+        int height = noiseMap.GetLength(1);
+        Color[] colour = new Color[width * height];
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                for (int i = 0; i < layerOfLands.Length; i++)
+                {
+                    if (noiseMap[x, y] <= layerOfLands[i].value)
+                    {
+                        colour[y * width + x] = layerOfLands[i].color;
+                        break;
+                    }
+                }
+            }
+        }
+        return new MapData(noiseMap, colour);
+    }
+
+   public void DrawMapInEditor()
+    {
+        MapData mapData = GenerateMap();
         MapDisplay display = FindObjectOfType<MapDisplay>();
         if (drawType == DrawType.color)
-            display.DrawColorMap(noiseMap);
-        else if(drawType == DrawType.whiteBlackNoise)
-            display.DrawNoiseMap(noiseMap);
-        else if(drawType == DrawType.mesh)
-            display.DrawMeshMap(noiseMap,maxHeightPx,landCurve, levelOfDetails);
+            display.DrawColorMap(mapData.heightMap, mapData.colorMap);
+        else if (drawType == DrawType.whiteBlackNoise)
+            display.DrawNoiseMap(mapData.heightMap);
+        else if (drawType == DrawType.mesh)
+            display.DrawMeshMap(mapData.heightMap, mapData.colorMap, maxHeightPx, landCurve, levelOfDetails);
     }
 
     private void OnValidate()
