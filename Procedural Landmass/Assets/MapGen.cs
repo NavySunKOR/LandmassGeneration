@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
+using System.Threading;
 
 public enum DrawType
 { 
@@ -20,8 +22,8 @@ public class LayerOfLand
 
 public struct MapData
 {
-    public float[,] heightMap;
-    public Color[] colorMap;
+    public readonly float[,] heightMap;
+    public readonly Color[] colorMap;
 
     public MapData(float[,] heightMap, Color[] colorMap)
     {
@@ -48,6 +50,7 @@ public class MapGen : MonoBehaviour
     public AnimationCurve landCurve;
     public LayerOfLand[] layerOfLands;
 
+    private Queue<MapThreadInfo<MapData>> mapThreadInfos = new Queue<MapThreadInfo<MapData>>();
 
     public MapData GenerateMap()
     {
@@ -72,7 +75,35 @@ public class MapGen : MonoBehaviour
         return new MapData(noiseMap, colour);
     }
 
-   public void DrawMapInEditor()
+    public void RequestMapData(Action<MapData> callback){
+        ThreadStart threadStart = delegate
+        {
+            MapDataThread(callback);
+        };
+        new Thread(threadStart).Start();
+    }
+
+    void MapDataThread(Action<MapData> callback)
+    {
+        MapData mapData = GenerateMap();
+        lock(mapThreadInfos){
+            mapThreadInfos.Enqueue(new MapThreadInfo<MapData>(callback, mapData));
+        }
+    }
+
+    private void Update()
+    {
+        if(mapThreadInfos.Count > 0)
+        {
+            for(int i = 0; i < mapThreadInfos.Count; i++)
+            {
+                MapThreadInfo<MapData> data = mapThreadInfos.Dequeue();
+                data.callback(data.param);
+            }
+        }
+    }
+
+    public void DrawMapInEditor()
     {
         MapData mapData = GenerateMap();
         MapDisplay display = FindObjectOfType<MapDisplay>();
@@ -94,6 +125,18 @@ public class MapGen : MonoBehaviour
         if(octaves<0)
         {
             octaves = 0;
+        }
+    }
+
+    struct MapThreadInfo<T>
+    {
+        public readonly Action<T> callback;
+        public readonly T param;
+
+        public MapThreadInfo(Action<T> callback, T param)
+        {
+            this.callback = callback;
+            this.param = param;
         }
     }
 }

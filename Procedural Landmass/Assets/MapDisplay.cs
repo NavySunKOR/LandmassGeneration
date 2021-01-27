@@ -47,8 +47,8 @@ public class MapDisplay : MonoBehaviour
     public void DrawMeshMap(float[,] noiseMap,Color[] colorMap,float pMaxHeight,AnimationCurve landCurve,int levelOfDetails)
     {
         Texture2D texture = TextureGenerator.DrawTexture(colorMap, noiseMap.GetLength(0), noiseMap.GetLength(1));
-        Mesh mesh = MeshGenerator.CreateMesh(noiseMap,pMaxHeight, landCurve, levelOfDetails);
-        meshFilter.mesh = mesh;
+        MeshData mesh = MeshGenerator.CreateMesh(noiseMap,pMaxHeight, landCurve, levelOfDetails);
+        meshFilter.mesh = mesh.CreateMesh();
         meshRender.sharedMaterial.SetTexture("_MainTex", texture);
     }
 }

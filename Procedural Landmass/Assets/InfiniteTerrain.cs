@@ -8,6 +8,7 @@ public class InfiniteTerrain : MonoBehaviour
     public const float maxViewDistance = 450f;
     public Transform viewer;
     public static Vector2 viewerPosition;
+    static MapGen mapGen;
     
     int chunkSize;
     int chunksVisibleInViewDist;
@@ -21,16 +22,34 @@ public class InfiniteTerrain : MonoBehaviour
         private GameObject meshObject;
         private Vector2 pos;
         private Bounds bounds;
+
+        MapData mapData;
+        MeshRenderer meshRenderer;
+        MeshFilter meshFilter;
+
         public TerrainChunk(Vector2 coord, int size)
         {
             pos = coord * size;
             bounds = new Bounds(pos, Vector2.one * size);
             Vector3 posV3 = new Vector3(pos.x, 0, pos.y);
 
-            meshObject = GameObject.CreatePrimitive(PrimitiveType.Plane);
+            meshObject = new GameObject("TerrainChunk");
+            meshRenderer = meshObject.AddComponent<MeshRenderer>();
+            meshFilter = meshObject.AddComponent<MeshFilter>();
             meshObject.transform.position = posV3;
             meshObject.transform.localScale = Vector3.one * size / 10f;
             SetVisible(false);
+            mapGen.RequestMapData(OnMapDataReceived);
+        }
+
+        void OnMapDataReceived(MapData mapData)
+        {
+            print("MAP DATA");
+        }
+
+        void OnMeshDataReceived(MeshData meshData)
+        {
+            meshFilter.mesh = meshData.CreateMesh();
         }
 
         public void Update()
@@ -53,6 +72,7 @@ public class InfiniteTerrain : MonoBehaviour
     private void Start()
     {
         chunkSize = MapGen.mapChunkSize - 1;
+        mapGen = FindObjectOfType<MapGen>();
         chunksVisibleInViewDist = Mathf.RoundToInt(maxViewDistance / chunkSize);
     }
 
